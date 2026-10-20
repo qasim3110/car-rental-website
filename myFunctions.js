@@ -10,7 +10,7 @@
   }
 
   function mobileIsValid(value) {
-    return value === "" || /^(093|094|095|096|097|098|099)[0-9]{7}$/.test(value);
+    return value === "" || /^(090|093|094|095|096|098|099)[0-9]{7}$/.test(value);
   }
 
   function emailIsValid(value) {
@@ -61,7 +61,7 @@
     if (start === "") { errors.push("تاريخ بداية التأجير إلزامي."); }
     if (end === "") { errors.push("تاريخ نهاية التأجير إلزامي."); }
     if (start !== "" && end !== "" && dateDifference(start, end) <= 0) { errors.push("يجب أن يكون تاريخ النهاية لاحقًا لتاريخ البداية."); }
-    if (!mobileIsValid(mobile)) { errors.push("رقم الموبايل يجب أن يبدأ ببادئة سورية معتمدة (093 إلى 099) ويتكون من 10 أرقام."); }
+    if (!mobileIsValid(mobile)) { errors.push("رقم الموبايل يجب أن يبدأ ببادئة سورية معتمدة (090 أو 093 أو 094 أو 095 أو 096 أو 098 أو 099) ويتكون من 10 أرقام."); }
     if (!emailIsValid(email)) { errors.push("البريد الإلكتروني غير صحيح. أدخل عنوانًا مثل name@example.com."); }
     return { errors: errors, days: (start !== "" && end !== "") ? dateDifference(start, end) : 0 };
   }
