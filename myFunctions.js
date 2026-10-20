@@ -10,7 +10,11 @@
   }
 
   function mobileIsValid(value) {
-    return value === "" || /^09[3-9][0-9]{7}$/.test(value);
+    return value === "" || /^(093|094|095|096|097|098|099)[0-9]{7}$/.test(value);
+  }
+
+  function emailIsValid(value) {
+    return value === "" || /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value);
   }
 
   function dateDifference(start, end) {
@@ -24,9 +28,9 @@
     $(".car-select:checked").each(function () {
       var row = $(this).closest("tr");
       cars.push({
-        code: row.data("code"),
-        model: row.data("model"),
-        price: Number(row.data("price"))
+        code: $.trim(row.children().eq(0).text()),
+        model: $.trim(row.children().eq(1).text()),
+        price: Number(row.children().eq(3).text().replace(/[^0-9]/g, ""))
       });
     });
     return cars;
@@ -51,12 +55,14 @@
     var start = $("#startDate").val();
     var end = $("#endDate").val();
     var mobile = $.trim($("#mobile").val());
+    var email = $.trim($("#email").val());
     if (!arabicNameIsValid(name)) { errors.push("الاسم يجب أن يحتوي على أحرف عربية ومسافات فقط."); }
     if (!nationalIdIsValid(id)) { errors.push("الرقم الوطني يجب أن يتكون من 11 خانة وأن يبدأ برمز محافظة من 01 إلى 14."); }
     if (start === "") { errors.push("تاريخ بداية التأجير إلزامي."); }
     if (end === "") { errors.push("تاريخ نهاية التأجير إلزامي."); }
     if (start !== "" && end !== "" && dateDifference(start, end) <= 0) { errors.push("يجب أن يكون تاريخ النهاية لاحقًا لتاريخ البداية."); }
-    if (!mobileIsValid(mobile)) { errors.push("رقم الموبايل يجب أن يطابق صيغة Syriatel أو MTN مثل 09xxxxxxxx."); }
+    if (!mobileIsValid(mobile)) { errors.push("رقم الموبايل يجب أن يبدأ ببادئة سورية معتمدة (093 إلى 099) ويتكون من 10 أرقام."); }
+    if (!emailIsValid(email)) { errors.push("البريد الإلكتروني غير صحيح. أدخل عنوانًا مثل name@example.com."); }
     return { errors: errors, days: (start !== "" && end !== "") ? dateDifference(start, end) : 0 };
   }
 
