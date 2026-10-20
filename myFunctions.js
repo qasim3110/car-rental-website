@@ -17,6 +17,21 @@
     return value === "" || /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value);
   }
 
+  function dateIsValid(value) {
+    var parts;
+    var year;
+    var month;
+    var day;
+    var date;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) { return false; }
+    parts = value.split("-");
+    year = Number(parts[0]);
+    month = Number(parts[1]);
+    day = Number(parts[2]);
+    date = new Date(year, month - 1, day);
+    return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+  }
+
   function dateDifference(start, end) {
     var startDate = new Date(start + "T00:00:00");
     var endDate = new Date(end + "T00:00:00");
@@ -60,10 +75,12 @@
     if (!nationalIdIsValid(id)) { errors.push("الرقم الوطني يجب أن يتكون من 11 خانة وأن يبدأ برمز محافظة من 01 إلى 14."); }
     if (start === "") { errors.push("تاريخ بداية التأجير إلزامي."); }
     if (end === "") { errors.push("تاريخ نهاية التأجير إلزامي."); }
-    if (start !== "" && end !== "" && dateDifference(start, end) <= 0) { errors.push("يجب أن يكون تاريخ النهاية لاحقًا لتاريخ البداية."); }
+    if (start !== "" && !dateIsValid(start)) { errors.push("تاريخ بداية التأجير غير صالح. استخدم الصيغة YYYY-MM-DD وتأكد من صحة اليوم والشهر."); }
+    if (end !== "" && !dateIsValid(end)) { errors.push("تاريخ نهاية التأجير غير صالح. استخدم الصيغة YYYY-MM-DD وتأكد من صحة اليوم والشهر."); }
+    if (dateIsValid(start) && dateIsValid(end) && dateDifference(start, end) <= 0) { errors.push("يجب أن يكون تاريخ النهاية لاحقًا لتاريخ البداية."); }
     if (!mobileIsValid(mobile)) { errors.push("رقم الموبايل يجب أن يبدأ ببادئة سورية معتمدة (090 أو 093 أو 094 أو 095 أو 096 أو 098 أو 099) ويتكون من 10 أرقام."); }
     if (!emailIsValid(email)) { errors.push("البريد الإلكتروني غير صحيح. أدخل عنوانًا مثل name@example.com."); }
-    return { errors: errors, days: (start !== "" && end !== "") ? dateDifference(start, end) : 0 };
+    return { errors: errors, days: (dateIsValid(start) && dateIsValid(end)) ? dateDifference(start, end) : 0 };
   }
 
   function renderBookingResult(cars, days) {
